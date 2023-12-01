@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-var day = 0
+var day = 1
 
 func TestSolvePart1(t *testing.T) {
 	testCases := []struct {
@@ -15,8 +15,8 @@ func TestSolvePart1(t *testing.T) {
 		extraParams   []any
 		expectedValue string
 	}{
-		{"Test 1", *config.NewTestInput(1), nil, ""},
-		{"Real", *config.NewRealInput(), nil, ""},
+		{"Test 1", *config.NewTestInput(1), nil, "142"},
+		{"Real", *config.NewRealInput(), nil, "54927"},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -35,8 +35,8 @@ func TestSolvePart2(t *testing.T) {
 		extraParams   []any
 		expectedValue string
 	}{
-		{"Test 1", *config.NewTestInput(1), nil, ""},
-		{"Real", *config.NewRealInput(), nil, ""},
+		{"Test 2", *config.NewTestInput(2), nil, "281"},
+		{"Real", *config.NewRealInput(), nil, "54581"},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
