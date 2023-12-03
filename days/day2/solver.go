@@ -36,6 +36,27 @@ func (g *game) isPossible(l limit) bool {
 	return true
 }
 
+func (g *game) minimalNecessaryCubes() revealed {
+	minimal := g.cubes[0]
+	for _, cube := range g.cubes {
+		for color, count := range cube {
+			if count > minimal[color] {
+				minimal[color] = count
+			}
+		}
+	}
+	return minimal
+}
+
+func (g *game) powerOfMinimal() int {
+	minimal := g.minimalNecessaryCubes()
+	minialCubes := make([]int, 0, len(minimal))
+	for _, count := range minimal {
+		minialCubes = append(minialCubes, count)
+	}
+	return Product(minialCubes)
+}
+
 type revealed map[string]int
 
 func newRevealed(line string) revealed {
@@ -93,6 +114,14 @@ func Sum[T ~int | ~float64](s []T) T {
 	return sum
 }
 
+func Product[T ~int | ~float64](s []T) T {
+	var product T = 1
+	for _, v := range s {
+		product *= v
+	}
+	return product
+}
+
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	limit := getLimit(extraParams)
 	games := parseGames(input)
@@ -103,5 +132,8 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	return ""
+	games := parseGames(input)
+	powers := Map(games, func(g game) int { return g.powerOfMinimal() })
+	sum := Sum(powers)
+	return fmt.Sprintf("%d", sum)
 }
