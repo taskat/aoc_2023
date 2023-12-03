@@ -3,6 +3,7 @@ package main
 import (
 	"aoc_2023/config"
 	"aoc_2023/days/day1"
+	"aoc_2023/days/day2"
 	"aoc_2023/solver"
 	"fmt"
 	"os"
@@ -20,6 +21,8 @@ func getSolver(cfg Config) solver.Solver {
 	switch cfg.GetDay() {
 	case 1:
 		return &day1.Solver{}
+	case 2:
+		return &day2.Solver{}
 	default:
 		panic("Day not implemented yet")
 	}

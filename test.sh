@@ -1,0 +1,1 @@
+go test ./days/** -count=1
