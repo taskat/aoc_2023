@@ -97,5 +97,14 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	return ""
+	cards := getCards(input)
+	points := Map(cards, func(c *card) int { return len(c.getMatches()) })
+	amounts := Map(cards, func(c *card) int { return 1 })
+	for i, point := range points {
+		for j := 1; j <= point; j++ {
+			amounts[i+j] += amounts[i]
+		}
+	}
+	sum := Sum(amounts)
+	return fmt.Sprintf("%d", sum)
 }
