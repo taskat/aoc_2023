@@ -1,0 +1,8 @@
+seeds: 10 10
+
+seed-to-soil map:
+0 10 5
+20 16 1
+
+soil-to-location map:
+45 0 12
