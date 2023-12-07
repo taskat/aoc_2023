@@ -89,6 +89,19 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	return fmt.Sprintf("%d", product)
 }
 
+func parseoneRace(input string) race {
+	lines := strings.Split(input, "\n")
+	timeLine := strings.TrimSpace(strings.ReplaceAll(lines[0], "Time:", ""))
+	recordLine := strings.TrimSpace(strings.ReplaceAll(lines[1], "Distance:", ""))
+	timeString := strings.ReplaceAll(timeLine, " ", "")
+	time := atoi(timeString)
+	recordString := strings.ReplaceAll(recordLine, " ", "")
+	record := atoi(recordString)
+	return race{time: time, record: record}
+}
+
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	return ""
+	race := parseoneRace(input)
+	waysToWin := race.waysToWin()
+	return fmt.Sprintf("%d", waysToWin)
 }
