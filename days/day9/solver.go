@@ -27,6 +27,18 @@ func (s sequence) predict() int {
 	return diff[len(diff)-1] + s[len(s)-1]
 }
 
+func (s sequence) predictPast() int {
+	if All(s, func(n int) bool { return n == 0 }) {
+		return 0
+	}
+	diff := make(sequence, 0, len(s))
+	for i := 1; i < len(s); i++ {
+		diff = append(diff, s[i]-s[i-1])
+	}
+	diff = append(sequence{diff.predictPast()}, diff...)
+	return s[0] - diff[0]
+}
+
 func All[T any](arr []T, predicate func(T) bool) bool {
 	for _, v := range arr {
 		if !predicate(v) {
@@ -73,5 +85,8 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	return ""
+	sequences := parseSequences(input)
+	predictions := Map(sequences, sequence.predictPast)
+	sum := Sum(predictions)
+	return fmt.Sprintf("%d", sum)
 }
