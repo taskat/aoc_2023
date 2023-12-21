@@ -1,6 +1,8 @@
 package day1
 
 import (
+	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/stringutils"
 	"strconv"
 	"strings"
 )
@@ -8,18 +10,10 @@ import (
 type Solver struct{}
 
 func mapDigits(r rune) rune {
-	if isDigit(r) {
+	if stringutils.IsDigit(r) {
 		return r
 	}
 	return -1
-}
-
-func sum(numbers []int) int {
-	result := 0
-	for _, number := range numbers {
-		result += number
-	}
-	return result
 }
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
@@ -34,7 +28,7 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 		}
 		numbers[i] = calibration
 	}
-	sum := sum(numbers)
+	sum := arrays.Sum(numbers)
 	return strconv.Itoa(sum)
 }
 
@@ -51,7 +45,7 @@ func (*Solver) SolvePart2(input string, extraParams ...any) string {
 		}
 		numbers[i] = calibration
 	}
-	sum := sum(numbers)
+	sum := arrays.Sum(numbers)
 	return strconv.Itoa(sum)
 }
 
@@ -69,10 +63,10 @@ func addExtraDigits(line string) string {
 	}
 	firstDigit, lasDigist := false, false
 	for i := 0; i < len(line)-3; i++ {
-		if isDigit(rune(line[i])) {
+		if stringutils.IsDigit(rune(line[i])) {
 			firstDigit = true
 		}
-		if isDigit(rune(line[len(line)-i-1])) {
+		if stringutils.IsDigit(rune(line[len(line)-i-1])) {
 			lasDigist = true
 		}
 		for key, value := range extraDigits {
@@ -86,8 +80,4 @@ func addExtraDigits(line string) string {
 		}
 	}
 	return line
-}
-
-func isDigit(r rune) bool {
-	return r >= '0' && r <= '9'
 }
