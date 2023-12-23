@@ -20,6 +20,15 @@ func Any[T any](arr []T, predicate func(T) bool) bool {
 	return false
 }
 
+func FindIndex[T any](arr []T, predicate func(T) bool) int {
+	for index, item := range arr {
+		if predicate(item) {
+			return index
+		}
+	}
+	return -1
+}
+
 func Filter[T any](arr []T, predicate func(T) bool) []T {
 	var result []T
 	for _, item := range arr {

@@ -39,6 +39,27 @@ func Filter[KEY comparable, VALUE any](m map[KEY]VALUE, predicate func(KEY, VALU
 	return result
 }
 
+func Find[KEY comparable, VALUE any](m map[KEY]VALUE, predicate func(KEY, VALUE) bool) (KEY, VALUE, bool) {
+	for key, value := range m {
+		if predicate(key, value) {
+			return key, value, true
+		}
+	}
+	var zeroKey KEY
+	var zeroValue VALUE
+	return zeroKey, zeroValue, false
+}
+
+func FindKey[KEY comparable, VALUE any](m map[KEY]VALUE, predicate func(KEY, VALUE) bool) (KEY, bool) {
+	key, _, ok := Find(m, predicate)
+	return key, ok
+}
+
+func FindValue[KEY comparable, VALUE any](m map[KEY]VALUE, predicate func(KEY, VALUE) bool) (VALUE, bool) {
+	_, value, ok := Find(m, predicate)
+	return value, ok
+}
+
 func ForEach[KEY comparable, VALUE any](m map[KEY]VALUE, action func(KEY, VALUE)) {
 	for key, value := range m {
 		action(key, value)

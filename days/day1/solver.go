@@ -2,6 +2,7 @@ package day1
 
 import (
 	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/maps"
 	"aoc_2023/utils/stringutils"
 	"strconv"
 	"strings"
@@ -9,69 +10,97 @@ import (
 
 type Solver struct{}
 
-func mapDigits(r rune) rune {
-	if stringutils.IsDigit(r) {
-		return r
-	}
-	return -1
-}
-
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	lines := strings.Split(input, "\n")
-	numbers := make([]int, len(lines))
-	for i, line := range lines {
-		digits := strings.Map(mapDigits, line)
-		calibrationString := string(append([]byte{digits[0]}, digits[len(digits)-1]))
-		calibration := stringutils.Atoi(calibrationString)
-		numbers[i] = calibration
-	}
-	sum := arrays.Sum(numbers)
+	cr := NewBasicCalibrationReader(input)
+	sum := cr.getCalibrationSum()
 	return strconv.Itoa(sum)
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	lines := strings.Split(input, "\n")
-	numbers := make([]int, len(lines))
-	for i, line := range lines {
-		line = addExtraDigits(line)
-		digits := strings.Map(mapDigits, line)
-		calibrationString := string(append([]byte{digits[0]}, digits[len(digits)-1]))
-		calibration := stringutils.Atoi(calibrationString)
-		numbers[i] = calibration
-	}
-	sum := arrays.Sum(numbers)
+	cr := NewExtraCalibrationReader(input)
+	sum := cr.getCalibrationSum()
 	return strconv.Itoa(sum)
 }
 
-func addExtraDigits(line string) string {
-	extraDigits := map[string]string{
-		"one":   "1",
-		"two":   "2",
-		"three": "3",
-		"four":  "4",
-		"five":  "5",
-		"six":   "6",
-		"seven": "7",
-		"eight": "8",
-		"nine":  "9",
+var extraDigits = map[string]int{
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+}
+
+type CalibrationReader struct {
+	mapping map[string]int
+	input   string
+}
+
+func NewBasicCalibrationReader(input string) *CalibrationReader {
+	return &CalibrationReader{
+		mapping: make(map[string]int),
+		input:   input,
 	}
-	firstDigit, lasDigist := false, false
-	for i := 0; i < len(line)-3; i++ {
+}
+
+func NewExtraCalibrationReader(input string) *CalibrationReader {
+	return &CalibrationReader{
+		mapping: extraDigits,
+		input:   input,
+	}
+}
+
+func (cr *CalibrationReader) getCalibrationSum() int {
+	lines := strings.Split(cr.input, "\n")
+	calibrations := arrays.Map(lines, cr.getCalibration)
+	return arrays.Sum(calibrations)
+}
+
+func (cr *CalibrationReader) getCalibration(line string) int {
+	return cr.calculateCalibrationValue(cr.findFirstDigit(line), cr.findLastDigit(line))
+}
+
+func (cr *CalibrationReader) findFirstDigit(line string) int {
+	for i := 0; i < len(line); i++ {
 		if stringutils.IsDigit(rune(line[i])) {
-			firstDigit = true
+			return int(line[i] - '0')
 		}
-		if stringutils.IsDigit(rune(line[len(line)-i-1])) {
-			lasDigist = true
-		}
-		for key, value := range extraDigits {
-			if strings.HasPrefix(line[i:], key) && !firstDigit {
-				line = strings.Replace(line, key, value, 1)
-			}
-			if strings.HasSuffix(line[:len(line)-i], key) && !lasDigist {
-				keyLength := len(key)
-				line = line[:len(line)-i-keyLength] + value + line[len(line)-i:]
-			}
+		value, ok := cr.getExtraDigitPrefix(line[i:])
+		if ok {
+			return value
 		}
 	}
-	return line
+	return -1
+}
+
+func (cr *CalibrationReader) findLastDigit(line string) int {
+	for i := 0; i < len(line); i++ {
+		if stringutils.IsDigit(rune(line[len(line)-i-1])) {
+			return int(line[len(line)-i-1] - '0')
+		}
+		value, ok := cr.hasExtraDigitSuffix(line[:len(line)-i])
+		if ok {
+			return value
+		}
+	}
+	return -1
+}
+
+func (cr *CalibrationReader) getExtraDigitPrefix(line string) (int, bool) {
+	return maps.FindValue(cr.mapping, func(key string, _ int) bool {
+		return strings.HasPrefix(line, key)
+	})
+}
+
+func (cr *CalibrationReader) hasExtraDigitSuffix(line string) (int, bool) {
+	return maps.FindValue(cr.mapping, func(key string, _ int) bool {
+		return strings.HasSuffix(line, key)
+	})
+}
+
+func (cr *CalibrationReader) calculateCalibrationValue(firstDigit, lastDigit int) int {
+	return firstDigit*10 + lastDigit
 }
