@@ -1,139 +1,98 @@
 package day2
 
 import (
+	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/maps"
+	"aoc_2023/utils/stringutils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
 type Solver struct{}
 
 type game struct {
-	id    int
-	cubes []revealed
+	id     int
+	rounds []round
 }
 
 func newGame(line string) game {
 	line = strings.ReplaceAll(line, "Game ", "")
 	parts := strings.Split(line, ": ")
-	id, _ := strconv.Atoi(parts[0])
+	id := stringutils.Atoi(parts[0])
 	turns := strings.Split(parts[1], "; ")
-	cubes := make([]revealed, len(turns))
-	for i, turn := range turns {
-		cubes[i] = newRevealed(turn)
-	}
+	cubes := arrays.Map(turns, parseRound)
 	return game{id, cubes}
 }
 
-func (g *game) isPossible(l limit) bool {
-	for _, cube := range g.cubes {
-		for color, count := range cube {
-			if count > l[color] {
-				return false
-			}
-		}
-	}
-	return true
+func (g *game) isPossible(limit round) bool {
+	return arrays.All(g.rounds, func(r round) bool {
+		return r.isPossible(limit)
+	})
 }
 
-func (g *game) minimalNecessaryCubes() revealed {
-	minimal := g.cubes[0]
-	for _, cube := range g.cubes {
-		for color, count := range cube {
-			if count > minimal[color] {
-				minimal[color] = count
-			}
-		}
-	}
+func (g *game) minimalNecessaryCubes() round {
+	minimal := g.rounds[0]
+	arrays.ForEach(g.rounds, func(r round) { r.updateMinimal(&minimal) })
 	return minimal
 }
 
 func (g *game) powerOfMinimal() int {
 	minimal := g.minimalNecessaryCubes()
-	minialCubes := make([]int, 0, len(minimal))
-	for _, count := range minimal {
-		minialCubes = append(minialCubes, count)
-	}
-	return Product(minialCubes)
+	minimalCubes := maps.MapToArray(minimal, func(_ string, count int) int { return count })
+	return arrays.Product(minimalCubes)
 }
 
-type revealed map[string]int
+type round map[string]int
 
-func newRevealed(line string) revealed {
+func parseTurn(turn string) (string, int) {
+	parts := strings.Split(turn, " ")
+	return parts[1], stringutils.Atoi(parts[0])
+}
+
+func parseRound(line string) round {
 	turns := strings.Split(line, ", ")
-	revealed := make(revealed, len(turns))
-	for _, turn := range turns {
-		parts := strings.Split(turn, " ")
-		revealed[parts[1]], _ = strconv.Atoi(parts[0])
-	}
+	revealed := arrays.MapToMap(turns, parseTurn)
 	return revealed
+}
+
+func (r round) isPossible(limit round) bool {
+	return maps.All(r, func(color string, count int) bool { return count <= limit[color] })
+}
+
+func (r round) updateMinimal(minimal *round) {
+	maps.ForEach(r, func(color string, count int) {
+		if count > (*minimal)[color] {
+			(*minimal)[color] = count
+		}
+	})
 }
 
 func parseGames(input string) []game {
 	lines := strings.Split(input, "\n")
-	games := make([]game, len(lines))
-	for i, line := range lines {
-		games[i] = newGame(line)
-	}
+	games := arrays.Map(lines, newGame)
 	return games
 }
 
-type limit map[string]int
-
-func getLimit(extraParams []any) limit {
-	l := make(limit, 3)
-	l["red"], _ = strconv.Atoi(extraParams[0].(string))
-	l["green"], _ = strconv.Atoi(extraParams[1].(string))
-	l["blue"], _ = strconv.Atoi(extraParams[2].(string))
+func getLimit(extraParams []any) round {
+	l := make(round, 3)
+	l["red"] = stringutils.Atoi(extraParams[0].(string))
+	l["green"] = stringutils.Atoi(extraParams[1].(string))
+	l["blue"] = stringutils.Atoi(extraParams[2].(string))
 	return l
-}
-
-func Filter[T any](s []T, fn func(T) bool) []T {
-	var p []T // == nil
-	for _, v := range s {
-		if fn(v) {
-			p = append(p, v)
-		}
-	}
-	return p
-}
-
-func Map[T, U any](s []T, fn func(T) U) []U {
-	p := make([]U, len(s))
-	for i, v := range s {
-		p[i] = fn(v)
-	}
-	return p
-}
-
-func Sum[T ~int | ~float64](s []T) T {
-	var sum T
-	for _, v := range s {
-		sum += v
-	}
-	return sum
-}
-
-func Product[T ~int | ~float64](s []T) T {
-	var product T = 1
-	for _, v := range s {
-		product *= v
-	}
-	return product
 }
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	limit := getLimit(extraParams)
 	games := parseGames(input)
-	possibleGames := Filter(games, func(g game) bool { return g.isPossible(limit) })
-	possibleGameIds := Map(possibleGames, func(g game) int { return g.id })
-	sum := Sum(possibleGameIds)
+	possibleGames := arrays.Filter(games, func(g game) bool { return g.isPossible(limit) })
+	possibleGameIds := arrays.Map(possibleGames, func(g game) int { return g.id })
+	sum := arrays.Sum(possibleGameIds)
 	return fmt.Sprintf("%d", sum)
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
 	games := parseGames(input)
-	powers := Map(games, func(g game) int { return g.powerOfMinimal() })
-	sum := Sum(powers)
+	powers := arrays.Map(games, func(g game) int { return g.powerOfMinimal() })
+	sum := arrays.Sum(powers)
 	return fmt.Sprintf("%d", sum)
 }

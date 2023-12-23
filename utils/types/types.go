@@ -11,3 +11,8 @@ type String interface {
 type Summable interface {
 	Number | String
 }
+
+type Pair[FIRST, SECOND any] struct {
+	First  FIRST
+	Second SECOND
+}

@@ -22,10 +22,7 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	for i, line := range lines {
 		digits := strings.Map(mapDigits, line)
 		calibrationString := string(append([]byte{digits[0]}, digits[len(digits)-1]))
-		calibration, err := strconv.Atoi(calibrationString)
-		if err != nil {
-			panic(err)
-		}
+		calibration := stringutils.Atoi(calibrationString)
 		numbers[i] = calibration
 	}
 	sum := arrays.Sum(numbers)
@@ -39,10 +36,7 @@ func (*Solver) SolvePart2(input string, extraParams ...any) string {
 		line = addExtraDigits(line)
 		digits := strings.Map(mapDigits, line)
 		calibrationString := string(append([]byte{digits[0]}, digits[len(digits)-1]))
-		calibration, err := strconv.Atoi(calibrationString)
-		if err != nil {
-			panic(err)
-		}
+		calibration := stringutils.Atoi(calibrationString)
 		numbers[i] = calibration
 	}
 	sum := arrays.Sum(numbers)
