@@ -87,7 +87,7 @@ func MapToArray[KEY comparable, VALUE1, VALUE2 any](m map[KEY]VALUE1, mapper fun
 	return result
 }
 
-func Max[KEY comparable, VALUE types.Number](m map[KEY]VALUE) VALUE {
+func Max[KEY comparable, VALUE types.Real](m map[KEY]VALUE) VALUE {
 	if len(m) == 0 {
 		panic("Cannot find max of empty map")
 	}
@@ -100,7 +100,7 @@ func Max[KEY comparable, VALUE types.Number](m map[KEY]VALUE) VALUE {
 	return result
 }
 
-func Min[KEY comparable, VALUE types.Number](m map[KEY]VALUE) VALUE {
+func Min[KEY comparable, VALUE types.Real](m map[KEY]VALUE) VALUE {
 	if len(m) == 0 {
 		panic("Cannot find min of empty map")
 	}

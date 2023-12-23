@@ -20,15 +20,6 @@ func Any[T any](arr []T, predicate func(T) bool) bool {
 	return false
 }
 
-func FindIndex[T any](arr []T, predicate func(T) bool) int {
-	for index, item := range arr {
-		if predicate(item) {
-			return index
-		}
-	}
-	return -1
-}
-
 func Filter[T any](arr []T, predicate func(T) bool) []T {
 	var result []T
 	for _, item := range arr {
@@ -37,6 +28,25 @@ func Filter[T any](arr []T, predicate func(T) bool) []T {
 		}
 	}
 	return result
+}
+
+func Find[T any](arr []T, predicate func(T) bool) (T, bool) {
+	for _, item := range arr {
+		if predicate(item) {
+			return item, true
+		}
+	}
+	var zero T
+	return zero, false
+}
+
+func FindIndex[T any](arr []T, predicate func(T) bool) (int, bool) {
+	for index, item := range arr {
+		if predicate(item) {
+			return index, true
+		}
+	}
+	return -1, false
 }
 
 func ForEach[T any](arr []T, action func(T)) {
@@ -71,6 +81,10 @@ func None[T any](arr []T, predicate func(T) bool) bool {
 	return true
 }
 
+func Remove[T any](arr []T, predicate func(T) bool) []T {
+	return Filter(arr, func(item T) bool { return !predicate(item) })
+}
+
 func Sum[T types.Summable](arr []T) T {
 	var result T
 	for _, item := range arr {
@@ -87,7 +101,7 @@ func Product[T types.Number](arr []T) T {
 	return result
 }
 
-func Max[T types.Number](arr []T) T {
+func Max[T types.Real](arr []T) T {
 	if len(arr) == 0 {
 		panic("Cannot find max of empty array")
 	}
@@ -100,7 +114,7 @@ func Max[T types.Number](arr []T) T {
 	return result
 }
 
-func Min[T types.Number](arr []T) T {
+func Min[T types.Real](arr []T) T {
 	if len(arr) == 0 {
 		panic("Cannot find min of empty array")
 	}
