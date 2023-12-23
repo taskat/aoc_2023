@@ -20,6 +20,15 @@ func Any[T any](arr []T, predicate func(T) bool) bool {
 	return false
 }
 
+func Contains[T comparable](arr []T, item T) bool {
+	for _, i := range arr {
+		if i == item {
+			return true
+		}
+	}
+	return false
+}
+
 func Filter[T any](arr []T, predicate func(T) bool) []T {
 	var result []T
 	for _, item := range arr {
@@ -53,6 +62,20 @@ func ForEach[T any](arr []T, action func(T)) {
 	for _, item := range arr {
 		action(item)
 	}
+}
+
+func Intersection[T comparable](arr1 []T, arr2 []T) []T {
+	var result []T
+	for _, item := range arr1 {
+		if Contains(arr2, item) {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func Length[T any](arr []T) int {
+	return len(arr)
 }
 
 func Map[T any, U any](arr []T, mapper func(T) U) []U {

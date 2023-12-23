@@ -2,9 +2,11 @@ package day4
 
 import (
 	"fmt"
-	"math"
-	"strconv"
 	"strings"
+
+	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/math/intmath"
+	"aoc_2023/utils/stringutils"
 )
 
 type Solver struct{}
@@ -14,12 +16,12 @@ type card struct {
 	chosen  []int
 }
 
-func parseCard(line string) *card {
+func parseCard(line string) card {
 	parts := strings.Split(line, ": ")
 	parts = strings.Split(parts[1], " | ")
 	winningNumbers := parseNumbers(parts[0])
 	chosenNumbers := parseNumbers(parts[1])
-	return &card{
+	return card{
 		winning: winningNumbers,
 		chosen:  chosenNumbers,
 	}
@@ -27,84 +29,46 @@ func parseCard(line string) *card {
 
 func parseNumbers(s string) []int {
 	values := strings.Split(s, " ")
-	numbers := make([]int, 0, len(values))
-	for _, v := range values {
-		if v == "" {
-			continue
-		}
-		newNumber, err := strconv.Atoi(v)
-		if err != nil {
-			panic(err)
-		}
-		numbers = append(numbers, newNumber)
-	}
+	values = arrays.Remove(values, stringutils.IsEmpty)
+	numbers := arrays.Map(values, stringutils.Atoi)
 	return numbers
 }
 
-func (c *card) getMatches() []int {
-	matches := make([]int, 0, len(c.winning))
-	for _, w := range c.winning {
-		if Contains(c.chosen, w) {
-			matches = append(matches, w)
-		}
+func (c card) getMatchingNumbersCount() int {
+	matchingNumbers := arrays.Intersection(c.winning, c.chosen)
+	return len(matchingNumbers)
+}
+
+func (c card) getPoints() int {
+	count := c.getMatchingNumbersCount()
+	if count == 0 {
+		return 0
 	}
-	return matches
+	return intmath.Power(2, count-1)
 }
 
-func (c *card) getPoints() int {
-	return int(math.Pow(2, float64(len(c.getMatches())-1)))
-}
-
-func Contains[T comparable](slice []T, value T) bool {
-	for _, v := range slice {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
-func getCards(input string) []*card {
+func getCards(input string) []card {
 	lines := strings.Split(input, "\n")
-	cards := make([]*card, 0, len(lines))
-	for _, line := range lines {
-		cards = append(cards, parseCard(line))
-	}
+	cards := arrays.Map(lines, parseCard)
 	return cards
-}
-
-func Map[T any, U any](slice []T, f func(T) U) []U {
-	result := make([]U, 0, len(slice))
-	for _, v := range slice {
-		result = append(result, f(v))
-	}
-	return result
-}
-
-func Sum(slice []int) int {
-	sum := 0
-	for _, v := range slice {
-		sum += v
-	}
-	return sum
 }
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	cards := getCards(input)
-	points := Map(cards, func(c *card) int { return c.getPoints() })
-	sum := Sum(points)
+	points := arrays.Map(cards, card.getPoints)
+	sum := arrays.Sum(points)
 	return fmt.Sprintf("%d", sum)
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
 	cards := getCards(input)
-	points := Map(cards, func(c *card) int { return len(c.getMatches()) })
-	amounts := Map(cards, func(c *card) int { return 1 })
-	for i, point := range points {
-		for j := 1; j <= point; j++ {
+	matchingNumbersCount := arrays.Map(cards, card.getMatchingNumbersCount)
+	amounts := arrays.Map(cards, func(c card) int { return 1 })
+	for i, count := range matchingNumbersCount {
+		for j := 1; j <= count; j++ {
 			amounts[i+j] += amounts[i]
 		}
 	}
-	sum := Sum(amounts)
+	sum := arrays.Sum(amounts)
 	return fmt.Sprintf("%d", sum)
 }

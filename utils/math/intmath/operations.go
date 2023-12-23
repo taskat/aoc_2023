@@ -8,3 +8,12 @@ func Abs[INT types.SignedInteger](number INT) INT {
 	}
 	return number
 }
+
+func Power[INT types.Integer](base, exponent INT) INT {
+	var result INT = 1
+	var i INT
+	for i = 0; i < exponent; i++ {
+		result *= base
+	}
+	return result
+}
