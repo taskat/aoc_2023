@@ -9,9 +9,9 @@ import (
 )
 
 type Config struct {
-	day int
-	part int
-	data Input
+	day         int
+	part        int
+	data        Input
 	extraParams []any
 }
 
@@ -104,7 +104,6 @@ func NewConfigForTest(c *Config) *ConfigForTest {
 func (c *ConfigForTest) GetInputData() string {
 	fileName := c.getInputFilename()
 	fileName, _ = filepath.Abs(fileName)
-	fmt.Println(fileName)
 	data, err := os.ReadFile(fileName)
 	if err != nil {
 		fmt.Println("Error reading input file:", err)

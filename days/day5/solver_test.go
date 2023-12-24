@@ -28,6 +28,28 @@ func TestSolvePart1(t *testing.T) {
 	}
 }
 
+var result any
+
+func BenchmarkSolvePart1(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart1(cfg.GetInputData())
+	}
+}
+
+func BenchmarkSolvePart2(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart2(cfg.GetInputData())
+	}
+}
+
 func TestSolvePart2(t *testing.T) {
 	testCases := []struct {
 		name          string
