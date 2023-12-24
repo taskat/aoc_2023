@@ -21,7 +21,7 @@ func parseMapping(s string) mapping {
 	srcStart := stringutils.Atoi(parts[1])
 	srcLength := stringutils.Atoi(parts[2])
 	return mapping{
-		Range:    ru.NewRangeWithLength(srcStart, srcLength),
+		Range:    *ru.NewRangeWithLength(srcStart, srcLength),
 		dstStart: dstStart,
 	}
 }
@@ -41,24 +41,24 @@ func (m *mapping) String() string {
 	return fmt.Sprintf("Range: %v, DstStart: %d", m.Range.String(), m.dstStart)
 }
 
-func (m *mapping) mapRange(r ru.Range) (ru.Range, []ru.Range) {
+func (m *mapping) mapRange(r ru.Range) (*ru.Range, []ru.Range) {
 	switch {
 	case m.ContainsRange(r):
 		return ru.NewRangeWithLength(m.mapValue(r.From()), r.Length()), []ru.Range{}
 	case !m.HasIntersection(r):
-		return ru.Range{}, []ru.Range{r}
+		return nil, []ru.Range{r}
 	case m.From() > r.From() && m.To() < r.To():
 		return ru.NewRange(m.mapValue(m.From()), m.mapValue(m.To()-1)+1), []ru.Range{
-			ru.NewRange(r.From(), m.From()),
-			ru.NewRange(m.To(), r.To()),
+			*ru.NewRange(r.From(), m.From()),
+			*ru.NewRange(m.To(), r.To()),
 		}
 	case m.From() <= r.From() && m.To() < r.To():
 		return ru.NewRange(m.mapValue(r.From()), m.mapValue(m.To()-1)+1), []ru.Range{
-			ru.NewRange(m.To(), r.To()),
+			*ru.NewRange(m.To(), r.To()),
 		}
 	case m.From() >= r.From() && m.To() >= r.To():
 		return ru.NewRange(m.mapValue(m.From()), m.mapValue(r.To()-1)+1), []ru.Range{
-			ru.NewRange(r.From(), m.From()),
+			*ru.NewRange(r.From(), m.From()),
 		}
 	default:
 		panic("ranges has no relation")
@@ -108,9 +108,9 @@ func (gm *gardenMapping) mapRanges(ranges []ru.Range) []ru.Range {
 				continue
 			}
 			wasIntersected = true
-			newRange, rem := m.mapRange(r)
-			if newRange != (ru.Range{}) {
-				newRanges = append(newRanges, newRange)
+			mapped, rem := m.mapRange(r)
+			if mapped != nil {
+				newRanges = append(newRanges, *mapped)
 			}
 			ranges = append(ranges, rem...)
 			break
@@ -168,7 +168,7 @@ func parseSeedRanges(line string) []ru.Range {
 	for i := 0; i < len(parts); i += 2 {
 		from := stringutils.Atoi(parts[i])
 		length := stringutils.Atoi(parts[i+1])
-		ranges = append(ranges, ru.NewRangeWithLength(from, length))
+		ranges = append(ranges, *ru.NewRangeWithLength(from, length))
 	}
 	return ranges
 }

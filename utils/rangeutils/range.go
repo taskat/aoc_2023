@@ -7,18 +7,18 @@ type Range struct {
 	to   int
 }
 
-func NewRange(from, to int) Range {
+func NewRange(from, to int) *Range {
 	if to < from {
 		panic(fmt.Sprintf("Invalid range: %d-%d", from, to))
 	}
-	return Range{
+	return &Range{
 		from: from,
 		to:   to,
 	}
 }
 
-func NewRangeWithLength(from, length int) Range {
-	return Range{
+func NewRangeWithLength(from, length int) *Range {
+	return &Range{
 		from: from,
 		to:   from + length,
 	}
