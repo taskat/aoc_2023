@@ -1,8 +1,10 @@
 package day6
 
 import (
+	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/stringutils"
+	"aoc_2023/utils/types"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -18,15 +20,13 @@ func parseRaces(input string) []race {
 	timeLine := strings.TrimSpace(strings.ReplaceAll(lines[0], "Time:", ""))
 	recordLine := strings.TrimSpace(strings.ReplaceAll(lines[1], "Distance:", ""))
 	timeStrings := strings.Split(timeLine, " ")
-	timeStrings = Filter(timeStrings, func(s string) bool { return s != "" })
-	times := Map(timeStrings, func(s string) int { return atoi(s) })
+	timeStrings = arrays.Filter(timeStrings, stringutils.IsNotEmpty)
+	times := arrays.Map(timeStrings, stringutils.Atoi)
 	recordStrings := strings.Split(recordLine, " ")
-	recordStrings = Filter(recordStrings, func(s string) bool { return s != "" })
-	records := Map(recordStrings, func(s string) int { return atoi(s) })
-	races := make([]race, len(timeStrings))
-	for i := 0; i < len(timeStrings); i++ {
-		races[i] = race{time: times[i], record: records[i]}
-	}
+	recordStrings = arrays.Filter(recordStrings, stringutils.IsNotEmpty)
+	records := arrays.Map(recordStrings, stringutils.Atoi)
+	pairs := arrays.Pair(times, records)
+	races := arrays.Map(pairs, func(p types.Pair[int, int]) race { return race{time: p.First, record: p.Second} })
 	return races
 }
 
@@ -39,53 +39,13 @@ func (r race) distances() []int {
 }
 
 func (r race) waysToWin() int {
-	counter := 0
-	for _, distance := range r.distances() {
-		if distance > r.record {
-			counter++
-		}
-	}
-	return counter
-}
-
-func atoi(s string) int {
-	r, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return r
-}
-
-func Filter[T any](s []T, fn func(T) bool) []T {
-	var p []T // == nil
-	for _, v := range s {
-		if fn(v) {
-			p = append(p, v)
-		}
-	}
-	return p
-}
-
-func Map[T, U any](s []T, fn func(T) U) []U {
-	p := make([]U, len(s))
-	for i, v := range s {
-		p[i] = fn(v)
-	}
-	return p
-}
-
-func Product(slice []int) int {
-	product := 1
-	for _, elem := range slice {
-		product *= elem
-	}
-	return product
+	return arrays.CountIf(r.distances(), func(distance int) bool { return distance > r.record })
 }
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	races := parseRaces(input)
-	waysToWin := Map(races, race.waysToWin)
-	product := Product(waysToWin)
+	waysToWin := arrays.Map(races, race.waysToWin)
+	product := arrays.Product(waysToWin)
 	return fmt.Sprintf("%d", product)
 }
 
@@ -94,9 +54,9 @@ func parseoneRace(input string) race {
 	timeLine := strings.TrimSpace(strings.ReplaceAll(lines[0], "Time:", ""))
 	recordLine := strings.TrimSpace(strings.ReplaceAll(lines[1], "Distance:", ""))
 	timeString := strings.ReplaceAll(timeLine, " ", "")
-	time := atoi(timeString)
+	time := stringutils.Atoi(timeString)
 	recordString := strings.ReplaceAll(recordLine, " ", "")
-	record := atoi(recordString)
+	record := stringutils.Atoi(recordString)
 	return race{time: time, record: record}
 }
 

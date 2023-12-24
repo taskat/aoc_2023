@@ -29,6 +29,16 @@ func Contains[T comparable](arr []T, item T) bool {
 	return false
 }
 
+func CountIf[T any](arr []T, predicate func(T) bool) int {
+	counter := 0
+	for _, item := range arr {
+		if predicate(item) {
+			counter++
+		}
+	}
+	return counter
+}
+
 func Filter[T any](arr []T, predicate func(T) bool) []T {
 	var result []T
 	for _, item := range arr {
@@ -102,6 +112,17 @@ func None[T any](arr []T, predicate func(T) bool) bool {
 		}
 	}
 	return true
+}
+
+func Pair[T, U any](arr1 []T, arr2 []U) []types.Pair[T, U] {
+	if len(arr1) != len(arr2) {
+		panic("Cannot pair arrays of different lengths")
+	}
+	result := make([]types.Pair[T, U], len(arr1))
+	for i := 0; i < len(arr1); i++ {
+		result[i] = *types.NewPair(arr1[i], arr2[i])
+	}
+	return result
 }
 
 func Remove[T any](arr []T, predicate func(T) bool) []T {

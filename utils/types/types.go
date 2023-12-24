@@ -40,3 +40,10 @@ type Pair[FIRST, SECOND any] struct {
 	First  FIRST
 	Second SECOND
 }
+
+func NewPair[FIRST, SECOND any](first FIRST, second SECOND) *Pair[FIRST, SECOND] {
+	return &Pair[FIRST, SECOND]{
+		First:  first,
+		Second: second,
+	}
+}
