@@ -1,18 +1,21 @@
-package _raw_
+package day_daynumber_
 
 import (
 	"aoc_2023/config"
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-var day = 0
+var (
+	day    = 0
+	result any
+)
 
-func TestSolvePart1(t *testing.T) {
+func TestDay_daynumber_Part1(t *testing.T) {
 	testCases := []struct {
-		name string
-		input config.Input
-		extraParams []any
+		name          string
+		input         config.Input
+		extraParams   []any
 		expectedValue string
 	}{
 		{"Test 1", *config.NewTestInput(1), nil, ""},
@@ -28,11 +31,21 @@ func TestSolvePart1(t *testing.T) {
 	}
 }
 
-func TestSolvePart2(t *testing.T) {
+func BenchmarkDay_daynumber_Part1(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart1(cfg.GetInputData())
+	}
+}
+
+func TestDay_daynumber_Part2(t *testing.T) {
 	testCases := []struct {
-		name string
-		input config.Input
-		extraParams []any
+		name          string
+		input         config.Input
+		extraParams   []any
 		expectedValue string
 	}{
 		{"Test 1", *config.NewTestInput(1), nil, ""},
@@ -45,5 +58,15 @@ func TestSolvePart2(t *testing.T) {
 			solution := solver.SolvePart2(cfg.GetInputData(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
+	}
+}
+
+func BenchmarkDay_daynumber_Part2(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart2(cfg.GetInputData())
 	}
 }

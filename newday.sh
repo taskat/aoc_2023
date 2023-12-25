@@ -4,30 +4,30 @@ set -e;
 add_input() {
     cd inputs;
     CURRENT=$(($(ls -la | wc -l) -  3));
-    DIRNAME="day$((CURRENT + 1))";
-    mkdir $DIRNAME;
-    cd $DIRNAME;
+    DIRDAYNUMBER="day$((CURRENT + 1))";
+    mkdir $DIRDAYNUMBER;
+    cd $DIRDAYNUMBER;
     touch data.txt data1.txt;
     cd ../..;
 }
 
 create_package() {
     cd days;
-    NAME="day$((CURRENT + 1))";
-    mkdir $NAME;
-    cd $NAME;
+    DAYNUMBER="$((CURRENT + 1))";
+    mkdir day$DAYNUMBER;
+    cd day$DAYNUMBER;
     FILE="solver.go"
     cp ../../raw/raw.go $FILE;
-    sed -i "s/_raw_/$NAME/g" $FILE;
+    sed -i "s/_daynumber_/$DAYNUMBER/g" $FILE;
     cd ../..;
 }
 
 add_test() {
-    cd days/$NAME;
+    cd days/day$DAYNUMBER;
     FILE="solver_test.go"
     cp ../../raw/raw_test.go $FILE;
-    sed -i "s/_raw_/$NAME/g" $FILE;
-    sed -i "s/var day = 0/var day = $((CURRENT + 1))/g" $FILE;
+    sed -i "s/_daynumber_/$DAYNUMBER/g" $FILE;
+    sed -i "s/day    = 0/day    = $((CURRENT + 1))/g" $FILE;
     cd ../..;
 }
 

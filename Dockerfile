@@ -7,5 +7,7 @@ RUN go mod download
 
 ENV COUNT 1
 ENV BENCHTIME 1s
+ENV TESTS ./...
+ENV NAMES ^$
 
-ENTRYPOINT go test ./days/day1/... -run=^$ -bench=. -benchmem -count $COUNT -benchtime $BENCHTIME
+ENTRYPOINT go test $TESTS -run $NAMES -bench=. -benchmem -count $COUNT -benchtime $BENCHTIME

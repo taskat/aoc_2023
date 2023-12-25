@@ -1,6 +1,6 @@
-package _raw_
+package day_daynumber_
 
-type Solver struct {}
+type Solver struct{}
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
 	return ""
