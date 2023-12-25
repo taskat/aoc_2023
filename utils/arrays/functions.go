@@ -88,7 +88,7 @@ func Length[T any](arr []T) int {
 	return len(arr)
 }
 
-func Map[T any, U any](arr []T, mapper func(T) U) []U {
+func Map[T, U any](arr []T, mapper func(T) U) []U {
 	var result []U
 	for _, item := range arr {
 		result = append(result, mapper(item))

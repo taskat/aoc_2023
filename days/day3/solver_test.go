@@ -6,9 +6,12 @@ import (
 	"testing"
 )
 
-var day = 3
+var (
+	day    = 3
+	result any
+)
 
-func TestSolvePart1(t *testing.T) {
+func TestDay3Part1(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -28,7 +31,17 @@ func TestSolvePart1(t *testing.T) {
 	}
 }
 
-func TestSolvePart2(t *testing.T) {
+func BenchmarkDay3Part1(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart1(cfg.GetInputData())
+	}
+}
+
+func TestDay3Part2(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -45,5 +58,15 @@ func TestSolvePart2(t *testing.T) {
 			solution := solver.SolvePart2(cfg.GetInputData(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
+	}
+}
+
+func BenchmarkDay3Part2(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart2(cfg.GetInputData())
 	}
 }
