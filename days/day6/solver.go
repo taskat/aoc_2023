@@ -2,6 +2,7 @@ package day6
 
 import (
 	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/math/intmath"
 	"aoc_2023/utils/stringutils"
 	"aoc_2023/utils/types"
 	"fmt"
@@ -36,7 +37,10 @@ func (r race) distances() []int {
 }
 
 func (r race) waysToWin() int {
-	return arrays.CountIf(r.distances(), func(distance int) bool { return distance > r.record })
+	x1, x2 := intmath.SolveQuadratic(1, -r.time, r.record)
+	from := intmath.Ceil[int](x1)
+	to := intmath.Floor[int](x2)
+	return intmath.Abs(to - from + 1)
 }
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
