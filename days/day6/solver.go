@@ -31,10 +31,7 @@ func parseRaces(input string) []race {
 }
 
 func (r race) distances() []int {
-	distances := make([]int, r.time)
-	for i := 1; i < r.time; i++ {
-		distances[i] = i * (r.time - i)
-	}
+	distances := arrays.Mapi(make([]int, r.time), func(i int, _ int) int { return i * (r.time - i) })
 	return distances
 }
 

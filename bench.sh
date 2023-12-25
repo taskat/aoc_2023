@@ -1,0 +1,1 @@
+docker run --env-file bench.env --rm --name aoc-bench --mount src="$(pwd)",target=/go/src/app,type=bind aoc-bench
