@@ -32,7 +32,7 @@ func parseRaces(input string) []race {
 }
 
 func (r race) distances() []int {
-	distances := arrays.Mapi(make([]int, r.time), func(i int, _ int) int { return i * (r.time - i) })
+	distances := arrays.Map_i(make([]int, r.time), func(i int, _ int) int { return i * (r.time - i) })
 	return distances
 }
 

@@ -2,6 +2,18 @@ package arrays
 
 import "aoc_2023/utils/types"
 
+func Accumulate[T, U any](arr []T, initial U, accumulator func(U, T) U) U {
+	return Accumulate_i(arr, initial, func(init U, _ int, item T) U { return accumulator(initial, item) })
+}
+
+func Accumulate_i[T, U any](arr []T, initial U, accumulator func(U, int, T) U) U {
+	result := initial
+	for idx, item := range arr {
+		result = accumulator(result, idx, item)
+	}
+	return result
+}
+
 func All[T any](arr []T, predicate func(T) bool) bool {
 	for _, item := range arr {
 		if !predicate(item) {
@@ -50,13 +62,18 @@ func Filter[T any](arr []T, predicate func(T) bool) []T {
 }
 
 func Find[T any](arr []T, predicate func(T) bool) (T, bool) {
-	for _, item := range arr {
-		if predicate(item) {
-			return item, true
+	_, result, ok := Find_i(arr, func(_ int, item T) bool { return predicate(item) })
+	return result, ok
+}
+
+func Find_i[T any](arr []T, predicate func(int, T) bool) (int, T, bool) {
+	for idx, item := range arr {
+		if predicate(idx, item) {
+			return idx, item, true
 		}
 	}
 	var zero T
-	return zero, false
+	return -1, zero, false
 }
 
 func FindIndex[T any](arr []T, predicate func(T) bool) (int, bool) {
@@ -89,10 +106,10 @@ func Length[T any](arr []T) int {
 }
 
 func Map[T, U any](arr []T, mapper func(T) U) []U {
-	return Mapi(arr, func(_ int, item T) U { return mapper(item) })
+	return Map_i(arr, func(_ int, item T) U { return mapper(item) })
 }
 
-func Mapi[T, U any](arr []T, mapper func(int, T) U) []U {
+func Map_i[T, U any](arr []T, mapper func(int, T) U) []U {
 	var result []U
 	for index, item := range arr {
 		result = append(result, mapper(index, item))

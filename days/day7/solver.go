@@ -1,6 +1,9 @@
 package day7
 
 import (
+	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/maps"
+	"aoc_2023/utils/stringutils"
 	"fmt"
 	"sort"
 	"strconv"
@@ -11,18 +14,18 @@ type Solver struct{}
 
 type card rune
 
+func (c card) isSame(other card) bool {
+	return c == other
+}
+
+func (c card) isStrongerThan(other card, cardValues map[card]int) bool {
+	return cardValues[c] > cardValues[other]
+}
+
 var cardValues_part1 = map[card]int{
 	'2': 2, '3': 3, '4': 4, '5': 5,
 	'6': 6, '7': 7, '8': 8, '9': 9,
 	'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14,
-}
-
-func Map[T, U any](arr []T, f func(T) U) []U {
-	result := make([]U, len(arr))
-	for i, v := range arr {
-		result[i] = f(v)
-	}
-	return result
 }
 
 type hand struct {
@@ -33,11 +36,8 @@ type hand struct {
 
 func parseHand(input string, withJokers bool) hand {
 	parts := strings.Split(input, " ")
-	cards := make([]card, len(parts[0]))
-	for i, c := range parts[0] {
-		cards[i] = card(c)
-	}
-	bid := atoi(parts[1])
+	cards := arrays.Map([]rune(parts[0]), func(c rune) card { return card(c) })
+	bid := stringutils.Atoi(parts[1])
 	h := hand{cards: cards, bid: bid}
 	h.handType = handTypeHashes[h.calculateHandTypeHash(withJokers)]
 	return h
@@ -52,20 +52,16 @@ func (h *hand) calculateHandTypeHash(withJoker bool) string {
 	if withJoker {
 		jokers = cards['J']
 		delete(cards, 'J')
-	}
-	values := make([]int, 0, len(cards))
-	for _, v := range cards {
-		values = append(values, v)
-	}
-	sort.Slice(values, func(i, j int) bool { return values[i] > values[j] })
-	if withJoker {
-		if len(values) == 0 {
-			values = []int{jokers}
-		} else {
-			values[0] += jokers
+		if len(cards) == 0 {
+			return "5"
 		}
 	}
-	return strings.Join(Map(values, func(i int) string { return strconv.Itoa(i) }), "")
+	values := maps.MapToArray(cards, func(k card, v int) int { return v })
+	sort.Slice(values, func(i, j int) bool { return values[i] > values[j] })
+	if withJoker {
+		values[0] += jokers
+	}
+	return strings.Join(arrays.Map(values, strconv.Itoa), "")
 }
 
 func (h *hand) String() string {
@@ -76,28 +72,11 @@ func (h *hand) isStrongerThan(other hand, cardValues map[card]int) bool {
 	if h.handType != other.handType {
 		return h.handType > other.handType
 	}
-	for i := range h.cards {
-		if h.cards[i] != other.cards[i] {
-			value, ok := cardValues[h.cards[i]]
-			if !ok {
-				panic(fmt.Sprintf("Unknown card: %c", h.cards[i]))
-			}
-			otherValue, ok := cardValues[other.cards[i]]
-			if !ok {
-				panic(fmt.Sprintf("Unknown card: %c", other.cards[i]))
-			}
-			return value > otherValue
-		}
+	idx, card, ok := arrays.Find_i(h.cards, func(i int, c card) bool { return !c.isSame(other.cards[i]) })
+	if !ok {
+		return false
 	}
-	return false
-}
-
-func atoi(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return i
+	return card.isStrongerThan(other.cards[idx], cardValues)
 }
 
 type handType int
@@ -145,18 +124,12 @@ func (h *handType) String() string {
 
 func parseHands(input string, withJokers bool) []hand {
 	lines := strings.Split(input, "\n")
-	return Map(lines, func(line string) hand { return parseHand(line, withJokers) })
+	return arrays.Map(lines, func(line string) hand { return parseHand(line, withJokers) })
 }
 
 func calculateWinnings(hands []hand, cardValues map[card]int) int {
 	sort.Slice(hands, func(i, j int) bool { return !hands[i].isStrongerThan(hands[j], cardValues) })
-	for _, h := range hands {
-		fmt.Println(h.String())
-	}
-	winnings := 0
-	for i, h := range hands {
-		winnings += h.bid * (i + 1)
-	}
+	winnings := arrays.Accumulate_i(hands, 0, func(acc, idx int, h hand) int { return acc + h.bid*(idx+1) })
 	return winnings
 }
 

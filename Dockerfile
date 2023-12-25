@@ -5,6 +5,6 @@ WORKDIR /go/src/app
 ENV COUNT 1
 ENV BENCHTIME 1s
 ENV TESTS ./...
-ENV NAMES ^$
+ENV NAMES .*
 
-ENTRYPOINT go test $TESTS -run $NAMES -bench=. -benchmem -count $COUNT -benchtime $BENCHTIME
+ENTRYPOINT go test $TESTS -run ^$ -bench $NAMES -benchmem -count $COUNT -benchtime $BENCHTIME
