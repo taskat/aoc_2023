@@ -150,6 +150,21 @@ func Remove[T any](arr []T, predicate func(T) bool) []T {
 	return Filter(arr, func(item T) bool { return !predicate(item) })
 }
 
+func Split[T any](arr []T, predicate func(T) bool) [][]T {
+	result := make([][]T, 0)
+	current := make([]T, 0)
+	for _, item := range arr {
+		if predicate(item) {
+			result = append(result, current)
+			current = make([]T, 0)
+		} else {
+			current = append(current, item)
+		}
+	}
+	result = append(result, current)
+	return result
+}
+
 func Sum[T types.Summable](arr []T) T {
 	var result T
 	for _, item := range arr {

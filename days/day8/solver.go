@@ -4,6 +4,7 @@ import (
 	"aoc_2023/utils/arrays"
 	"aoc_2023/utils/maps"
 	"aoc_2023/utils/math/intmath"
+	"aoc_2023/utils/stringutils"
 	"fmt"
 	"strings"
 )
@@ -61,11 +62,11 @@ func parseNode(line string) *node {
 	return &node{label, neighbors}
 }
 
-func parseInput(input string) ([]dir, map[string]*node) {
-	parts := strings.Split(input, "\n\n")
-	directions := parseDirections(parts[0])
-	lines := strings.Split(parts[1], "\n")
-	nodes := arrays.MapToMap(lines, func(line string) (string, *node) {
+func parseInput(lines []string) ([]dir, map[string]*node) {
+	// parts := strings.Split(input, "\n\n")
+	parts := arrays.Split(lines, stringutils.IsEmpty)
+	directions := parseDirections(parts[0][0])
+	nodes := arrays.MapToMap(parts[1], func(line string) (string, *node) {
 		n := parseNode(line)
 		return n.label, n
 	})
@@ -73,7 +74,8 @@ func parseInput(input string) ([]dir, map[string]*node) {
 }
 
 func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	directions, nodes := parseInput(input)
+	parts := strings.Split(input, "\n")
+	directions, nodes := parseInput(parts)
 	start := "AAA"
 	goal := "ZZZ"
 	current := start
@@ -87,7 +89,6 @@ func (*Solver) SolvePart1(input string, extraParams ...any) string {
 }
 
 func getMinStep(cycles []int) int {
-	fmt.Println(cycles)
 	minSteps := intmath.Lcm(cycles[0], cycles[1])
 	for i := 2; i < len(cycles); i++ {
 		minSteps = intmath.Lcm(minSteps, cycles[i])
@@ -96,7 +97,8 @@ func getMinStep(cycles []int) int {
 }
 
 func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	directions, nodes := parseInput(input)
+	parts := strings.Split(input, "\n")
+	directions, nodes := parseInput(parts)
 	starts := maps.Filter(nodes, func(_ string, n *node) bool { return n.isStart() })
 	cycles := maps.MapToArray(starts, func(_ string, n *node) int { return n.getCycleLength(directions, nodes) })
 	minSteps := getMinStep(cycles)
