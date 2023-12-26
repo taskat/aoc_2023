@@ -8,6 +8,20 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	sequences := parseSequences(lines)
+	predictions := Map(sequences, sequence.predict)
+	sum := Sum(predictions)
+	return fmt.Sprintf("%d", sum)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	sequences := parseSequences(lines)
+	predictions := Map(sequences, sequence.predictPast)
+	sum := Sum(predictions)
+	return fmt.Sprintf("%d", sum)
+}
+
 type sequence []int
 
 func parseSequence(input string) sequence {
@@ -64,9 +78,8 @@ func atoi(s string) int {
 	return n
 }
 
-func parseSequences(input string) []sequence {
-	parts := strings.Split(input, "\n")
-	return Map(parts, parseSequence)
+func parseSequences(lines []string) []sequence {
+	return Map(lines, parseSequence)
 }
 
 func Sum(arr []int) int {
@@ -75,18 +88,4 @@ func Sum(arr []int) int {
 		sum += v
 	}
 	return sum
-}
-
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	sequences := parseSequences(input)
-	predictions := Map(sequences, sequence.predict)
-	sum := Sum(predictions)
-	return fmt.Sprintf("%d", sum)
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	sequences := parseSequences(input)
-	predictions := Map(sequences, sequence.predictPast)
-	sum := Sum(predictions)
-	return fmt.Sprintf("%d", sum)
 }

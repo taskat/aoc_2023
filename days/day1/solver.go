@@ -10,14 +10,14 @@ import (
 
 type Solver struct{}
 
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	cr := NewBasicCalibrationReader(input)
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	cr := NewBasicCalibrationReader(lines)
 	sum := cr.getCalibrationSum()
 	return strconv.Itoa(sum)
 }
 
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	cr := NewExtraCalibrationReader(input)
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	cr := NewExtraCalibrationReader(lines)
 	sum := cr.getCalibrationSum()
 	return strconv.Itoa(sum)
 }
@@ -36,26 +36,25 @@ var extraDigits = map[string]int{
 
 type CalibrationReader struct {
 	mapping map[string]int
-	input   string
+	lines   []string
 }
 
-func NewBasicCalibrationReader(input string) *CalibrationReader {
+func NewBasicCalibrationReader(lines []string) *CalibrationReader {
 	return &CalibrationReader{
 		mapping: make(map[string]int),
-		input:   input,
+		lines:   lines,
 	}
 }
 
-func NewExtraCalibrationReader(input string) *CalibrationReader {
+func NewExtraCalibrationReader(lines []string) *CalibrationReader {
 	return &CalibrationReader{
 		mapping: extraDigits,
-		input:   input,
+		lines:   lines,
 	}
 }
 
 func (cr *CalibrationReader) getCalibrationSum() int {
-	lines := strings.Split(cr.input, "\n")
-	calibrations := arrays.Map(lines, cr.getCalibration)
+	calibrations := arrays.Map(cr.lines, cr.getCalibration)
 	return arrays.Sum(calibrations)
 }
 

@@ -10,6 +10,20 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	seeds, mappings := parseMappings(lines)
+	locations := findLocations(seeds, mappings)
+	minLocation := arrays.Min(locations)
+	return fmt.Sprintf("%d", minLocation)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	seeds, mappings := parseMappings_2(lines)
+	locations := arrays.Map(seeds, func(seed ru.Range) int { return findMinLocation(seed, mappings) })
+	min := arrays.Min(locations)
+	return fmt.Sprintf("%d", min)
+}
+
 type mapping struct {
 	ru.Range
 	dstStart int
@@ -71,8 +85,7 @@ type gardenMapping struct {
 	mappings []mapping
 }
 
-func parseGardenMapping(input string) gardenMapping {
-	lines := strings.Split(input, "\n")
+func parseGardenMapping(lines []string) gardenMapping {
 	title := lines[0]
 	title = strings.ReplaceAll(title, " map:", "")
 	parts := strings.Split(title, "-")
@@ -129,10 +142,10 @@ func parseSeeds(line string) []int {
 	return seeds
 }
 
-func parseMappings(input string) ([]int, map[string]gardenMapping) {
-	lines := strings.Split(input, "\n\n")
-	seeds := parseSeeds(lines[0])
-	mappings := arrays.Map(lines[1:], parseGardenMapping)
+func parseMappings(lines []string) ([]int, map[string]gardenMapping) {
+	blocks := arrays.Split(lines, stringutils.IsEmpty)
+	seeds := parseSeeds(blocks[0][0])
+	mappings := arrays.Map(blocks[1:], parseGardenMapping)
 	gardens := arrays.MapToMap(mappings, gardenMapping.keyValue)
 	return seeds, gardens
 }
@@ -154,13 +167,6 @@ func findLocations(seeds []int, gardens map[string]gardenMapping) []int {
 	return arrays.Map(seeds, func(seed int) int { return findLocation(seed, gardens) })
 }
 
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	seeds, mappings := parseMappings(input)
-	locations := findLocations(seeds, mappings)
-	minLocation := arrays.Min(locations)
-	return fmt.Sprintf("%d", minLocation)
-}
-
 func parseSeedRanges(line string) []ru.Range {
 	line = strings.ReplaceAll(line, "seeds: ", "")
 	parts := strings.Split(line, " ")
@@ -173,9 +179,9 @@ func parseSeedRanges(line string) []ru.Range {
 	return ranges
 }
 
-func parseMappings_2(input string) ([]ru.Range, map[string]gardenMapping) {
-	blocks := strings.Split(input, "\n\n")
-	seeds := parseSeedRanges(blocks[0])
+func parseMappings_2(lines []string) ([]ru.Range, map[string]gardenMapping) {
+	blocks := arrays.Split(lines, stringutils.IsEmpty)
+	seeds := parseSeedRanges(blocks[0][0])
 	mappings := arrays.Map(blocks[1:], parseGardenMapping)
 	gardens := arrays.MapToMap(mappings, gardenMapping.keyValue)
 	return seeds, gardens
@@ -194,11 +200,4 @@ func findMinLocation(r ru.Range, gardens map[string]gardenMapping) int {
 	}
 	starts := arrays.Map(ranges, ru.Range.From)
 	return arrays.Min(starts)
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	seeds, mappings := parseMappings_2(input)
-	locations := arrays.Map(seeds, func(seed ru.Range) int { return findMinLocation(seed, mappings) })
-	min := arrays.Min(locations)
-	return fmt.Sprintf("%d", min)
 }

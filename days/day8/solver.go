@@ -11,6 +11,28 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	directions, nodes := parseInput(lines)
+	start := "AAA"
+	goal := "ZZZ"
+	current := start
+	steps := 0
+	for ; current != goal; steps++ {
+		currentNode := nodes[current]
+		d := directions[steps%len(directions)]
+		current = currentNode.neighbors[d]
+	}
+	return fmt.Sprintf("%d", steps)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	directions, nodes := parseInput(lines)
+	starts := maps.Filter(nodes, func(_ string, n *node) bool { return n.isStart() })
+	cycles := maps.MapToArray(starts, func(_ string, n *node) int { return n.getCycleLength(directions, nodes) })
+	minSteps := getMinStep(cycles)
+	return fmt.Sprintf("%d", minSteps)
+}
+
 type dir rune
 
 const (
@@ -63,7 +85,6 @@ func parseNode(line string) *node {
 }
 
 func parseInput(lines []string) ([]dir, map[string]*node) {
-	// parts := strings.Split(input, "\n\n")
 	parts := arrays.Split(lines, stringutils.IsEmpty)
 	directions := parseDirections(parts[0][0])
 	nodes := arrays.MapToMap(parts[1], func(line string) (string, *node) {
@@ -73,34 +94,10 @@ func parseInput(lines []string) ([]dir, map[string]*node) {
 	return directions, nodes
 }
 
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	parts := strings.Split(input, "\n")
-	directions, nodes := parseInput(parts)
-	start := "AAA"
-	goal := "ZZZ"
-	current := start
-	steps := 0
-	for ; current != goal; steps++ {
-		currentNode := nodes[current]
-		d := directions[steps%len(directions)]
-		current = currentNode.neighbors[d]
-	}
-	return fmt.Sprintf("%d", steps)
-}
-
 func getMinStep(cycles []int) int {
 	minSteps := intmath.Lcm(cycles[0], cycles[1])
 	for i := 2; i < len(cycles); i++ {
 		minSteps = intmath.Lcm(minSteps, cycles[i])
 	}
 	return minSteps
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	parts := strings.Split(input, "\n")
-	directions, nodes := parseInput(parts)
-	starts := maps.Filter(nodes, func(_ string, n *node) bool { return n.isStart() })
-	cycles := maps.MapToArray(starts, func(_ string, n *node) int { return n.getCycleLength(directions, nodes) })
-	minSteps := getMinStep(cycles)
-	return fmt.Sprintf("%d", minSteps)
 }

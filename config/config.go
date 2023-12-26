@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -101,15 +102,21 @@ func NewConfigForTest(c *Config) *ConfigForTest {
 	return &ConfigForTest{*c}
 }
 
-func (c *ConfigForTest) GetInputData() string {
+func (c *ConfigForTest) GetInputData() []string {
 	fileName := c.getInputFilename()
 	fileName, _ = filepath.Abs(fileName)
-	data, err := os.ReadFile(fileName)
+	f, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println("Error reading input file:", err)
 		os.Exit(1)
 	}
-	return string(data)
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanLines)
+	lines := make([]string, 0)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines
 }
 
 func (c *ConfigForTest) getInputFilename() string {

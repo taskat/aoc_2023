@@ -10,6 +10,22 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	limit := getLimit(extraParams)
+	games := parseGames(lines)
+	possibleGames := arrays.Filter(games, func(g game) bool { return g.isPossible(limit) })
+	possibleGameIds := arrays.Map(possibleGames, func(g game) int { return g.id })
+	sum := arrays.Sum(possibleGameIds)
+	return fmt.Sprintf("%d", sum)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	games := parseGames(lines)
+	powers := arrays.Map(games, func(g game) int { return g.powerOfMinimal() })
+	sum := arrays.Sum(powers)
+	return fmt.Sprintf("%d", sum)
+}
+
 type game struct {
 	id     int
 	rounds []round
@@ -67,8 +83,7 @@ func (r round) updateMinimal(minimal *round) {
 	})
 }
 
-func parseGames(input string) []game {
-	lines := strings.Split(input, "\n")
+func parseGames(lines []string) []game {
 	games := arrays.Map(lines, newGame)
 	return games
 }
@@ -79,20 +94,4 @@ func getLimit(extraParams []any) round {
 	l["green"] = stringutils.Atoi(extraParams[1].(string))
 	l["blue"] = stringutils.Atoi(extraParams[2].(string))
 	return l
-}
-
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	limit := getLimit(extraParams)
-	games := parseGames(input)
-	possibleGames := arrays.Filter(games, func(g game) bool { return g.isPossible(limit) })
-	possibleGameIds := arrays.Map(possibleGames, func(g game) int { return g.id })
-	sum := arrays.Sum(possibleGameIds)
-	return fmt.Sprintf("%d", sum)
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	games := parseGames(input)
-	powers := arrays.Map(games, func(g game) int { return g.powerOfMinimal() })
-	sum := arrays.Sum(powers)
-	return fmt.Sprintf("%d", sum)
 }

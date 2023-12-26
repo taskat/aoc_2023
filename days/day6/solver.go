@@ -11,13 +11,25 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	races := parseRaces(lines)
+	waysToWin := arrays.Map(races, race.waysToWin)
+	product := arrays.Product(waysToWin)
+	return fmt.Sprintf("%d", product)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	race := parseOneRace(lines)
+	waysToWin := race.waysToWin()
+	return fmt.Sprintf("%d", waysToWin)
+}
+
 type race struct {
 	time   int
 	record int
 }
 
-func parseRaces(input string) []race {
-	lines := strings.Split(input, "\n")
+func parseRaces(lines []string) []race {
 	timeLine := strings.TrimSpace(strings.ReplaceAll(lines[0], "Time:", ""))
 	recordLine := strings.TrimSpace(strings.ReplaceAll(lines[1], "Distance:", ""))
 	timeStrings := strings.Split(timeLine, " ")
@@ -43,15 +55,7 @@ func (r race) waysToWin() int {
 	return intmath.Abs(to - from + 1)
 }
 
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	races := parseRaces(input)
-	waysToWin := arrays.Map(races, race.waysToWin)
-	product := arrays.Product(waysToWin)
-	return fmt.Sprintf("%d", product)
-}
-
-func parseoneRace(input string) race {
-	lines := strings.Split(input, "\n")
+func parseOneRace(lines []string) race {
 	timeLine := strings.TrimSpace(strings.ReplaceAll(lines[0], "Time:", ""))
 	recordLine := strings.TrimSpace(strings.ReplaceAll(lines[1], "Distance:", ""))
 	timeString := strings.ReplaceAll(timeLine, " ", "")
@@ -59,10 +63,4 @@ func parseoneRace(input string) race {
 	recordString := strings.ReplaceAll(recordLine, " ", "")
 	record := stringutils.Atoi(recordString)
 	return race{time: time, record: record}
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	race := parseoneRace(input)
-	waysToWin := race.waysToWin()
-	return fmt.Sprintf("%d", waysToWin)
 }

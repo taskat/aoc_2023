@@ -11,6 +11,26 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	cards := getCards(lines)
+	points := arrays.Map(cards, card.getPoints)
+	sum := arrays.Sum(points)
+	return fmt.Sprintf("%d", sum)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	cards := getCards(lines)
+	matchingNumbersCount := arrays.Map(cards, card.getMatchingNumbersCount)
+	amounts := arrays.Map(cards, func(c card) int { return 1 })
+	for i, count := range matchingNumbersCount {
+		for j := 1; j <= count; j++ {
+			amounts[i+j] += amounts[i]
+		}
+	}
+	sum := arrays.Sum(amounts)
+	return fmt.Sprintf("%d", sum)
+}
+
 type card struct {
 	winning []int
 	chosen  []int
@@ -47,28 +67,7 @@ func (c card) getPoints() int {
 	return intmath.Power(2, count-1)
 }
 
-func getCards(input string) []card {
-	lines := strings.Split(input, "\n")
+func getCards(lines []string) []card {
 	cards := arrays.Map(lines, parseCard)
 	return cards
-}
-
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	cards := getCards(input)
-	points := arrays.Map(cards, card.getPoints)
-	sum := arrays.Sum(points)
-	return fmt.Sprintf("%d", sum)
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	cards := getCards(input)
-	matchingNumbersCount := arrays.Map(cards, card.getMatchingNumbersCount)
-	amounts := arrays.Map(cards, func(c card) int { return 1 })
-	for i, count := range matchingNumbersCount {
-		for j := 1; j <= count; j++ {
-			amounts[i+j] += amounts[i]
-		}
-	}
-	sum := arrays.Sum(amounts)
-	return fmt.Sprintf("%d", sum)
 }

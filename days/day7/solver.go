@@ -12,6 +12,16 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	hands := parseHands(lines, false)
+	return fmt.Sprintf("%d", calculateWinnings(hands, cardValues))
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	hands := parseHands(lines, true)
+	return fmt.Sprintf("%d", calculateWinnings(hands, cardValues_withJoker))
+}
+
 type card rune
 
 func (c card) isSame(other card) bool {
@@ -22,10 +32,16 @@ func (c card) isStrongerThan(other card, cardValues map[card]int) bool {
 	return cardValues[c] > cardValues[other]
 }
 
-var cardValues_part1 = map[card]int{
+var cardValues = map[card]int{
 	'2': 2, '3': 3, '4': 4, '5': 5,
 	'6': 6, '7': 7, '8': 8, '9': 9,
 	'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14,
+}
+
+var cardValues_withJoker = map[card]int{
+	'J': 1, '2': 2, '3': 3, '4': 4,
+	'5': 5, '6': 6, '7': 7, '8': 8,
+	'9': 9, 'T': 10, 'Q': 12, 'K': 13, 'A': 14,
 }
 
 type hand struct {
@@ -122,8 +138,7 @@ func (h *handType) String() string {
 	}
 }
 
-func parseHands(input string, withJokers bool) []hand {
-	lines := strings.Split(input, "\n")
+func parseHands(lines []string, withJokers bool) []hand {
 	return arrays.Map(lines, func(line string) hand { return parseHand(line, withJokers) })
 }
 
@@ -131,20 +146,4 @@ func calculateWinnings(hands []hand, cardValues map[card]int) int {
 	sort.Slice(hands, func(i, j int) bool { return !hands[i].isStrongerThan(hands[j], cardValues) })
 	winnings := arrays.Accumulate_i(hands, 0, func(acc, idx int, h hand) int { return acc + h.bid*(idx+1) })
 	return winnings
-}
-
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	hands := parseHands(input, false)
-	return fmt.Sprintf("%d", calculateWinnings(hands, cardValues_part1))
-}
-
-var cardValues_part2 = map[card]int{
-	'J': 1, '2': 2, '3': 3, '4': 4,
-	'5': 5, '6': 6, '7': 7, '8': 8,
-	'9': 9, 'T': 10, 'Q': 12, 'K': 13, 'A': 14,
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	hands := parseHands(input, true)
-	return fmt.Sprintf("%d", calculateWinnings(hands, cardValues_part2))
 }

@@ -10,12 +10,25 @@ import (
 
 type Solver struct{}
 
+func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
+	schematic := parseSchematic(lines)
+	partNumbers := schematic.getParts(schematic.getPartNumberByIdx)
+	sum := arrays.Sum(partNumbers)
+	return fmt.Sprintf("%d", sum)
+}
+
+func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
+	schematic := parseSchematic(lines)
+	gearRatios := schematic.getParts(schematic.getGearRatiosByIdx)
+	sum := arrays.Sum(gearRatios)
+	return fmt.Sprintf("%d", sum)
+}
+
 const symbols = "@#$%&*)-=+/"
 
 type schematic [][]rune
 
-func parseSchematic(input string) schematic {
-	lines := strings.Split(input, "\n")
+func parseSchematic(lines []string) schematic {
 	s := arrays.Map(lines, func(line string) []rune { return []rune(line) })
 	return s
 }
@@ -143,18 +156,4 @@ func (idx *index) isHorizontalNeighbor(other index) bool {
 
 func (idx *index) same(other index) bool {
 	return idx.i == other.i && idx.j == other.j
-}
-
-func (*Solver) SolvePart1(input string, extraParams ...any) string {
-	schematic := parseSchematic(input)
-	partNumbers := schematic.getParts(schematic.getPartNumberByIdx)
-	sum := arrays.Sum(partNumbers)
-	return fmt.Sprintf("%d", sum)
-}
-
-func (*Solver) SolvePart2(input string, extraParams ...any) string {
-	schematic := parseSchematic(input)
-	gearRatios := schematic.getParts(schematic.getGearRatiosByIdx)
-	sum := arrays.Sum(gearRatios)
-	return fmt.Sprintf("%d", sum)
 }
