@@ -20,6 +20,17 @@ func Floor[INT types.Integer](number float64) INT {
 	return INT(math.Floor(number))
 }
 
+func Gcd(a, b int) int {
+	if b == 0 {
+		return a
+	}
+	return Gcd(b, a%b)
+}
+
+func Lcm(a, b int) int {
+	return a * b / Gcd(a, b)
+}
+
 func Power[INT types.Integer](base, exponent INT) INT {
 	var result INT = 1
 	var i INT

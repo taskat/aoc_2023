@@ -2,13 +2,18 @@ package day8
 
 import (
 	"aoc_2023/config"
-	"github.com/stretchr/testify/assert"
+	"aoc_2023/utils/maps"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var day = 8
+var (
+	day    = 8
+	result any
+)
 
-func TestSolvePart1(t *testing.T) {
+func TestDay8Part1(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -29,7 +34,29 @@ func TestSolvePart1(t *testing.T) {
 	}
 }
 
-func TestSolvePart2(t *testing.T) {
+func BenchmarkDebug(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	// solver := &Solver{}
+	directions, nodes := parseInput(cfg.GetInputData())
+	starts := maps.Filter(nodes, func(_ string, n *node) bool { return n.isStart() })
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = maps.MapToArray(starts, func(_ string, n *node) int { return n.getCycleLength(directions, nodes) })
+	}
+}
+
+func BenchmarkDay8Part1(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart1(cfg.GetInputData())
+	}
+}
+
+func TestDay8Part2(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -46,5 +73,15 @@ func TestSolvePart2(t *testing.T) {
 			solution := solver.SolvePart2(cfg.GetInputData(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
+	}
+}
+
+func BenchmarkDay8Part2(b *testing.B) {
+	input := config.NewRealInput()
+	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
+	solver := &Solver{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		result = solver.SolvePart2(cfg.GetInputData())
 	}
 }

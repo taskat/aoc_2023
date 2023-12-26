@@ -7,4 +7,4 @@ ENV BENCHTIME 1s
 ENV TESTS ./...
 ENV NAMES .*
 
-ENTRYPOINT go test $TESTS -run ^$ -bench $NAMES -benchmem -count $COUNT -benchtime $BENCHTIME
+ENTRYPOINT go test $TESTS -run='^$' -bench=$NAMES -benchmem -count $COUNT -benchtime $BENCHTIME
