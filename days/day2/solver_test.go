@@ -11,7 +11,7 @@ var (
 	result any
 )
 
-func TestDay2Part1(t *testing.T) {
+func Test_2023_Day2_Part1(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -31,7 +31,7 @@ func TestDay2Part1(t *testing.T) {
 	}
 }
 
-func BenchmarkDay2Part1(b *testing.B) {
+func Benchmark_2023_Day2_Part1(b *testing.B) {
 	input := config.NewRealInput()
 	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
 	solver := &Solver{}
@@ -41,7 +41,7 @@ func BenchmarkDay2Part1(b *testing.B) {
 	}
 }
 
-func TestDay2Part2(t *testing.T) {
+func Test_2023_Day2_Part2(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -61,7 +61,7 @@ func TestDay2Part2(t *testing.T) {
 	}
 }
 
-func BenchmarkDay2Part2(b *testing.B) {
+func Benchmark_2023_Day2_Part2(b *testing.B) {
 	input := config.NewRealInput()
 	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
 	solver := &Solver{}

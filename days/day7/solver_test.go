@@ -12,7 +12,7 @@ var (
 	result any
 )
 
-func TestDay7Part1(t *testing.T) {
+func Test_2023_Day7_Part1(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -32,7 +32,7 @@ func TestDay7Part1(t *testing.T) {
 	}
 }
 
-func BenchmarkDay7Part1(b *testing.B) {
+func Benchmark_2023_Day7_Part1(b *testing.B) {
 	input := config.NewRealInput()
 	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
 	solver := &Solver{}
@@ -42,7 +42,7 @@ func BenchmarkDay7Part1(b *testing.B) {
 	}
 }
 
-func TestDay7Part2(b *testing.T) {
+func Test_2023_Day7_Part2(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         config.Input
@@ -53,7 +53,7 @@ func TestDay7Part2(b *testing.T) {
 		{"Real", *config.NewRealInput(), nil, "246894760"},
 	}
 	for _, tc := range testCases {
-		b.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			solver := &Solver{}
 			cfg := config.NewConfigForTest(config.NewConfig(day, 0, tc.input))
 			solution := solver.SolvePart2(cfg.GetInputLines(), tc.extraParams...)
@@ -62,7 +62,7 @@ func TestDay7Part2(b *testing.T) {
 	}
 }
 
-func BenchmarkDay7Part2(b *testing.B) {
+func Benchmark_2023_Day7_Part2(b *testing.B) {
 	input := config.NewRealInput()
 	cfg := config.NewConfigForTest(config.NewConfig(day, 0, *input))
 	solver := &Solver{}
