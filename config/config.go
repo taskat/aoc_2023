@@ -14,10 +14,11 @@ type Config struct {
 	part        int
 	data        Input
 	extraParams []any
+	lines       []string
 }
 
 func NewConfig(day int, part int, data Input, extraParams ...any) *Config {
-	return &Config{day, part, data, extraParams}
+	return &Config{day, part, data, extraParams, make([]string, 0)}
 }
 
 func ParseConfig() *Config {
@@ -75,6 +76,9 @@ func (c *Config) GetInputType() string {
 }
 
 func (c *Config) GetInputLines() []string {
+	if len(c.lines) != 0 {
+		return c.lines
+	}
 	filename := fmt.Sprintf("inputs/day%d/data%s.txt", c.day, c.data.String())
 	return c.readInputLines(filename)
 }
@@ -96,6 +100,9 @@ func (c *Config) readInputLines(filename string) []string {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
+	if len(c.lines) == 0 {
+		c.lines = lines
+	}
 	return lines
 }
 
@@ -108,6 +115,9 @@ func NewConfigForTest(c *Config) *ConfigForTest {
 }
 
 func (c *ConfigForTest) GetInputLines() []string {
+	if len(c.lines) != 0 {
+		return c.lines
+	}
 	filename := fmt.Sprintf("../../inputs/day%d/data%s.txt", c.day, c.data.String())
 	return c.readInputLines(filename)
 }
