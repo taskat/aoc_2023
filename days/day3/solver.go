@@ -63,7 +63,7 @@ func (s *schematic) getGearRatiosByIdx(idx index) []int {
 	adjacents = s.removeDuplicates(idx, adjacents)
 	parts := arrays.Filter(adjacents, s.isDigit)
 	newPartNumbers := arrays.Map(parts, s.getPartNumber)
-	newPartNumbers = arrays.Filter(newPartNumbers, intmath.IsNotZero[int])
+	newPartNumbers = arrays.Filter(newPartNumbers, intmath.IsNotZero)
 	if len(newPartNumbers) == 2 {
 		return []int{newPartNumbers[0] * newPartNumbers[1]}
 	}

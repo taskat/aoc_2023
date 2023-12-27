@@ -1,8 +1,10 @@
 package day9
 
 import (
+	"aoc_2023/utils/arrays"
+	"aoc_2023/utils/math/intmath"
+	"aoc_2023/utils/stringutils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -10,15 +12,15 @@ type Solver struct{}
 
 func (*Solver) SolvePart1(lines []string, extraParams ...any) string {
 	sequences := parseSequences(lines)
-	predictions := Map(sequences, sequence.predict)
-	sum := Sum(predictions)
+	predictions := arrays.Map(sequences, sequence.predict)
+	sum := arrays.Sum(predictions)
 	return fmt.Sprintf("%d", sum)
 }
 
 func (*Solver) SolvePart2(lines []string, extraParams ...any) string {
 	sequences := parseSequences(lines)
-	predictions := Map(sequences, sequence.predictPast)
-	sum := Sum(predictions)
+	predictions := arrays.Map(sequences, sequence.predictPast)
+	sum := arrays.Sum(predictions)
 	return fmt.Sprintf("%d", sum)
 }
 
@@ -26,66 +28,43 @@ type sequence []int
 
 func parseSequence(input string) sequence {
 	parts := strings.Split(input, " ")
-	return sequence(Map(parts, atoi))
+	return sequence(arrays.Map(parts, stringutils.Atoi))
+}
+
+func (s sequence) pastPredictor(idx, value int) int {
+	if idx == 0 {
+		return value
+	}
+	return value - s[idx-1]
+}
+
+func (s sequence) predictor(idx, value int) int {
+	if idx == len(s)-1 {
+		return value
+	}
+	return s[idx+1] - value
 }
 
 func (s sequence) predict() int {
-	if All(s, func(n int) bool { return n == 0 }) {
+	if arrays.All(s, intmath.IsZero) {
 		return 0
 	}
-	diff := make(sequence, 0, len(s))
-	for i := 1; i < len(s); i++ {
-		diff = append(diff, s[i]-s[i-1])
-	}
+	var diff sequence = arrays.Map_i(s, s.predictor)
+	diff = diff[:len(diff)-1]
 	diff = append(diff, diff.predict())
 	return diff[len(diff)-1] + s[len(s)-1]
 }
 
 func (s sequence) predictPast() int {
-	if All(s, func(n int) bool { return n == 0 }) {
+	if arrays.All(s, intmath.IsZero) {
 		return 0
 	}
-	diff := make(sequence, 0, len(s))
-	for i := 1; i < len(s); i++ {
-		diff = append(diff, s[i]-s[i-1])
-	}
+	var diff sequence = arrays.Map_i(s, s.pastPredictor)
+	diff = diff[1:]
 	diff = append(sequence{diff.predictPast()}, diff...)
 	return s[0] - diff[0]
 }
 
-func All[T any](arr []T, predicate func(T) bool) bool {
-	for _, v := range arr {
-		if !predicate(v) {
-			return false
-		}
-	}
-	return true
-}
-
-func Map[T, U any](arr []T, mapper func(T) U) []U {
-	result := make([]U, len(arr))
-	for i, v := range arr {
-		result[i] = mapper(v)
-	}
-	return result
-}
-
-func atoi(s string) int {
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return n
-}
-
 func parseSequences(lines []string) []sequence {
-	return Map(lines, parseSequence)
-}
-
-func Sum(arr []int) int {
-	sum := 0
-	for _, v := range arr {
-		sum += v
-	}
-	return sum
+	return arrays.Map(lines, parseSequence)
 }
