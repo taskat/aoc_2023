@@ -20,7 +20,7 @@ type Config interface {
 	GetDay() int
 	GetPart() int
 	GetInputType() string
-	GetInputData() string
+	GetInputLines() []string
 	GetExtraParams() []interface{}
 }
 
@@ -49,12 +49,12 @@ func getSolver(cfg Config) solver.Solver {
 	}
 }
 
-func solve(cfg Config, input string) string {
+func solve(cfg Config, lines []string) string {
 	solver := getSolver(cfg)
 	if cfg.GetPart() == 1 {
-		return solver.SolvePart1(input, cfg.GetExtraParams()...)
+		return solver.SolvePart1(lines, cfg.GetExtraParams()...)
 	} else {
-		return solver.SolvePart2(input, cfg.GetExtraParams()...)
+		return solver.SolvePart2(lines, cfg.GetExtraParams()...)
 	}
 }
 
@@ -63,7 +63,7 @@ func main() {
 	if cfg == nil {
 		os.Exit(1)
 	}
-	input := cfg.GetInputData()
+	input := cfg.GetInputLines()
 	fmt.Printf("Start solving day %d, part %d with %s input...\n", cfg.GetDay(), cfg.GetPart(), cfg.GetInputType())
 	solution := solve(cfg, input)
 	fmt.Printf("Solved! Solution is: %s\n", solution)

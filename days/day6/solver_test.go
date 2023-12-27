@@ -25,7 +25,7 @@ func TestDay6Part1(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			solver := &Solver{}
 			cfg := config.NewConfigForTest(config.NewConfig(day, 0, tc.input))
-			solution := solver.SolvePart1(cfg.GetInputData(), tc.extraParams...)
+			solution := solver.SolvePart1(cfg.GetInputLines(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
 	}
@@ -37,7 +37,7 @@ func BenchmarkDay6Part1(b *testing.B) {
 	solver := &Solver{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		result = solver.SolvePart1(cfg.GetInputData())
+		result = solver.SolvePart1(cfg.GetInputLines())
 	}
 }
 
@@ -55,7 +55,7 @@ func TestDay6Part2(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			solver := &Solver{}
 			cfg := config.NewConfigForTest(config.NewConfig(day, 0, tc.input))
-			solution := solver.SolvePart2(cfg.GetInputData(), tc.extraParams...)
+			solution := solver.SolvePart2(cfg.GetInputLines(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
 	}
@@ -67,6 +67,6 @@ func BenchmarkDay6Part2(b *testing.B) {
 	solver := &Solver{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		result = solver.SolvePart2(cfg.GetInputData())
+		result = solver.SolvePart2(cfg.GetInputLines())
 	}
 }

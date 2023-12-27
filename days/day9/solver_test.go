@@ -22,7 +22,7 @@ func TestSolvePart1(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			solver := &Solver{}
 			cfg := config.NewConfigForTest(config.NewConfig(day, 0, tc.input))
-			solution := solver.SolvePart1(cfg.GetInputData(), tc.extraParams...)
+			solution := solver.SolvePart1(cfg.GetInputLines(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
 	}
@@ -42,7 +42,7 @@ func TestSolvePart2(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			solver := &Solver{}
 			cfg := config.NewConfigForTest(config.NewConfig(day, 0, tc.input))
-			solution := solver.SolvePart2(cfg.GetInputData(), tc.extraParams...)
+			solution := solver.SolvePart2(cfg.GetInputLines(), tc.extraParams...)
 			assert.Equal(t, tc.expectedValue, solution)
 		})
 	}

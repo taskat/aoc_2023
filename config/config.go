@@ -74,38 +74,18 @@ func (c *Config) GetInputType() string {
 	}
 }
 
-func (c *Config) GetInputData() string {
-	fileName := c.getInputFilename()
-	fileName, _ = filepath.Abs(fileName)
-	fmt.Println(fileName)
-	data, err := os.ReadFile(fileName)
-	if err != nil {
-		fmt.Println("Error reading input file:", err)
-		os.Exit(1)
-	}
-	return string(data)
+func (c *Config) GetInputLines() []string {
+	filename := fmt.Sprintf("inputs/day%d/data%s.txt", c.day, c.data.String())
+	return c.readInputLines(filename)
 }
 
 func (c *Config) GetPart() int {
 	return c.part
 }
 
-func (c *Config) getInputFilename() string {
-	return fmt.Sprintf("inputs/day%d/data%s.txt", c.day, c.data.String())
-}
-
-type ConfigForTest struct {
-	Config
-}
-
-func NewConfigForTest(c *Config) *ConfigForTest {
-	return &ConfigForTest{*c}
-}
-
-func (c *ConfigForTest) GetInputData() []string {
-	fileName := c.getInputFilename()
-	fileName, _ = filepath.Abs(fileName)
-	f, err := os.Open(fileName)
+func (c *Config) readInputLines(filename string) []string {
+	filename, _ = filepath.Abs(filename)
+	f, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Error reading input file:", err)
 		os.Exit(1)
@@ -117,6 +97,19 @@ func (c *ConfigForTest) GetInputData() []string {
 		lines = append(lines, scanner.Text())
 	}
 	return lines
+}
+
+type ConfigForTest struct {
+	Config
+}
+
+func NewConfigForTest(c *Config) *ConfigForTest {
+	return &ConfigForTest{*c}
+}
+
+func (c *ConfigForTest) GetInputLines() []string {
+	filename := fmt.Sprintf("../../inputs/day%d/data%s.txt", c.day, c.data.String())
+	return c.readInputLines(filename)
 }
 
 func (c *ConfigForTest) getInputFilename() string {
